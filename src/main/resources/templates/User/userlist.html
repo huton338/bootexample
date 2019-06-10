@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<h1>テスト</h1>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+  <div class="head" th:include="include/head"></div>
+  <div class="container">
+
+
+        <div class="row">
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>名前</th>
+                    <th>表示名</th>
+                    <th>メールアドレス</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr th:each="user : ${list}" th:object="${user}">
+                    <td th:text="*{id}"></td>
+                    <td th:text="*{name}"></td>
+                    <td th:text="*{displayName}"></td>
+                    <td th:text="*{mailaddress}"></td>
+                    <td>
+                        <a th:href="@{/user/update(id=${user.id})}">
+                            <button type="button"  class="btn btn-success">更新</button>
+                        </a>
+                    </td>
+                    <td>
+                       <form class="check_inputs" th:action="@{/user/delete}" method="POST">
+                            <div>
+                                <input type=hidden name="id" th:value="${user.id}"/></p>
+                            </div>
+                            <div class="btn_box">
+                                <button type="submit" name="user_delete" id="__commit">削除</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+          </div>
+
+
+  </div>
+</body>
+</html>

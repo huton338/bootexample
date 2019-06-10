@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja" dir="ltr">
+<head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ファイルアップロード</title>
+   <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+    <script>
+<!--
+$(function(){
+
+    // フォームデータのアップロード処理
+    var uploadBlobData = function(fileNmae, fileKey, totalBytes, binaryData, tasks, chunkCount) {
+
+        // アップロードの進捗表示
+        var xhr_func = function(){
+            var XHR = $.ajaxSettings.xhr();
+            XHR.upload.addEventListener('progress',function(e){
+                tasks[chunkCount] = e.loaded;
+
+                var upload = 0;
+                tasks.forEach(function(bytes) {
+                    upload += bytes;
+                });
+
+                var progre = parseInt(upload/totalBytes * 100);
+
+                $('#prog').val(progre);
+                $('#pv').html(progre);
+            });
+            return XHR;
+        };
+
+
+        // Ajaxでアップロード処理をするファイルへ内容渡す
+        $.ajax({
+            url: 'http://localhost:8080/demo/file/chunk',
+            type: 'POST',
+            data: binaryData,
+            processData: false,
+            contentType: 'application/octet-stream',
+//            headers: {
+//                'File-Name': fileNmae,
+//                'File-Key': fileKey,
+//                'Chunk-Index': chunkCount,
+//                'Chunk-Total': tasks.length
+//            },
+            xhr : xhr_func
+
+        }).done(function(data) {
+            console.log(data);
+
+        }).fail(function(data) {
+            console.log(data.responseText);
+        });
+
+    };
+
+    // https://gist.github.com/jcxplorer/823878
+    var createUuid = function() {
+        var uuid = "", i, random;
+        for (i = 0; i < 32; i++) {
+            random = Math.random() * 16 | 0;
+            if (i == 8 || i == 12 || i == 16 || i == 20) {
+                uuid += "-"
+            }
+            uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+        }
+        return uuid;
+    };
+
+    // ファイルのアップロード処理
+    var uploadFile = function(file) {
+
+        $('#prog').val(0);
+        $('#pv').html('0');
+
+        // 分割するサイズ(byte)
+        var chunkSize = 8 * 1024 * 1024;
+        // 選択されたファイルの総容量を取得
+        var totalBytes = file.size;
+        // ファイル名
+        var fileNmae = file.name;
+
+        // チャンク分割数
+        var chunkCount = Math.ceil(totalBytes / chunkSize);
+        // 識別キー
+        var fileKey = createUuid();
+
+        var readBytes = 0;
+        var tasks = [];
+        for (var i = 0; i < chunkCount; i++) {
+            tasks.push(0);
+        }
+
+        // チャンクサイズごとにスライスしながら読み込み
+        $.each(tasks, function(index) {
+
+            // stopをオーバーして指定した場合は自動的に切り詰められる
+            var blob = file.slice(readBytes, readBytes + chunkSize);
+            readBytes += chunkSize
+
+            var reader = new FileReader();
+            reader.onloadend = function(evt) {
+                // 読み取り完了のイベントだけキャッチ
+                if (evt.target.readyState != FileReader.DONE) {
+                    return;
+                }
+
+                // 読み取ったデータを取り出し
+                var binaryData = evt.target.result;
+                uploadBlobData(fileNmae, fileKey, totalBytes, binaryData, tasks, index);
+            };
+            reader.readAsArrayBuffer(blob);
+
+        });
+
+    };
+
+    // ファイルドロップ時の処理
+    $('#drag-area , #drag-area2').on('drop', function(e){
+        // デフォルトの挙動を停止
+        e.preventDefault();
+
+        // ファイル情報を取得
+        var files = e.originalEvent.dataTransfer.files;
+        uploadFile(files[0]);
+
+
+    // デフォルトの挙動を停止　これがないと、ブラウザーによりファイルが開かれる
+    }).on('dragenter', function(){
+        return false;
+    }).on('dragover', function(){
+        return false;
+    });
+
+
+    // ボタンを押した時の処理
+    $('#btn,#btn2').on('click', function() {
+        // ダミーボタンとinput[type="file"]を連動
+        $('#file_selecter').click();
+    });
+
+    $('#file_selecter ,#file_selecter2').on('change', function(){
+        // ファイル情報を取得
+        uploadFile(this.files[0]);
+    });
+
+});
+-->
+</script>
+</head>
+<body>
+<div id="drag-area" style="border-style: dashed;background-color: #042943; color: #ffffff;">
+ <p>アップロードするファイルをドロップ</p>
+ <p>または</p>
+ <div class="btn-group">
+    <input id="file_selecter" type="file" style="display:none;" name="files"/>
+    <button id="btn">ファイルを選択</button>
+ </div>
+</div>
+<progress value="0" id="prog" max=100></progress>(<span id="pv" style="color:#00b200">0</span>%)
+</body>
+<div id="drag-area2" style="border-style: dashed;background-color: #042943; color: #ffffff;">
+ <p>アップロードするファイルをドロップ</p>
+ <p>または</p>
+ <div class="btn-group">
+    <input id="file_selecter2" type="file" style="display:none;" name="files"/>
+    <button id="btn2">ファイルを選択</button>
+ </div>
+</div>
+<progress value="0" id="prog" max=100></progress>(<span id="pv" style="color:#00b200">0</span>%)
+</body>
+
+</html>

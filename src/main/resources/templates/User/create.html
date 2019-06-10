@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<h1>テスト</h1>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+  <div class="head" th:include="include/head"></div>
+  <div class="container">
+
+    <div class="row">
+        <form class="check_inputs" id="userForm" th:action="@{/user/create/comit}" th:object="${userForm}" method="POST">
+            <div>
+                <div>name</div>
+                <input type=text th:field="*{name}"/></p>
+                <div>displayname</div>
+                <input type=text th:field="*{displayName}"/></p>
+                <div>mailaddress</div>
+                <input type=text th:field="*{mailaddress}"/></p>
+            </div>
+            <div class="btn_box">
+                <button type="submit" name="user_create" id="__commit">送信</button>
+            </div>
+        </form>
+     </div>
+
+  </div>
+</body>
+</html>
